@@ -37,7 +37,14 @@ res.send(result);
       const query = { _id: new ObjectId(id) };
       const result = await studentsCollection.findOne(query);
       res.send(result);
-    })
+    });
+
+    app.delete("/students/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await studentsCollection.deleteOne(query);
+      res.send(result);
+    });
 
 
     await client.db("admin").command({ ping: 1 });
