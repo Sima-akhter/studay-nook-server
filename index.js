@@ -25,6 +25,19 @@ const run = async () => {
     const db = client.db("study-nook");
     const roomsCollection = db.collection("rooms");
 
+    app.get("/rooms", async (req, res) => {
+      const result = await roomsCollection.find().toArray();
+
+      res.json(result);
+    });
+
+        app.get("/rooms/:id", async (req, res) => {
+          const id = req.params.id;
+          const query = { _id: new ObjectId(id) };
+          const result = await roomsCollection.findOne(query);
+          res.send(result);
+        });
+
     app.post("/rooms", async (req, res) => {
       const room = req.body;
       console.log(room);
@@ -32,26 +45,12 @@ const run = async () => {
       res.json(result);
     });
 
-//     app.get("/users", async (req, res) => {
-// const cursor = usersCollection.find();
-// const result = await cursor.toArray();
-// res.send(result);
-//     });
-    
-//     app.get("/users/:id", async (req, res) => {
-//       const id = req.params.id;
-//       const query = { _id: new ObjectId(id) };
-//       const result = await usersCollection.findOne(query);
-//       res.send(result);
-//     });
-
-//     app.delete("/users/:id", async (req, res) => {
-//       const id = req.params.id;
-//       const query = { _id: new ObjectId(id) };
-//       const result = await usersCollection.deleteOne(query);
-//       res.send(result);
-//     });
-
+        app.delete("/rooms/:id", async (req, res) => {
+          const id = req.params.id;
+          const query = { _id: new ObjectId(id) };
+          const result = await roomsCollection.deleteOne(query);
+          res.send(result);
+        });
 
     await client.db("admin").command({ ping: 1 });
     console.log(
