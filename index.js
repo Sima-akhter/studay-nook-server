@@ -4,11 +4,10 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-const port = process.env.PORT || 5000;
-
 app.use(cors());
 app.use(express.json());
 
+const port = process.env.PORT;
 const uri = process.env.MONGODB_URI;
 
 const client = new MongoClient(uri, {
@@ -24,27 +23,34 @@ const run = async () => {
     await client.connect();
 
     const db = client.db("study-nook");
-    const studentsCollection = db.collection("students");
+    const roomsCollection = db.collection("rooms");
 
-    app.get("/students", async (req, res) => {
-const cursor = studentsCollection.find();
-const result = await cursor.toArray();
-res.send(result);
+    app.post("/rooms", async (req, res) => {
+      const room = req.body;
+      console.log(room);
+      const result = await roomsCollection.insertOne(room);
+      res.json(result);
     });
+
+//     app.get("/users", async (req, res) => {
+// const cursor = usersCollection.find();
+// const result = await cursor.toArray();
+// res.send(result);
+//     });
     
-    app.get("/students/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
-      const result = await studentsCollection.findOne(query);
-      res.send(result);
-    });
+//     app.get("/users/:id", async (req, res) => {
+//       const id = req.params.id;
+//       const query = { _id: new ObjectId(id) };
+//       const result = await usersCollection.findOne(query);
+//       res.send(result);
+//     });
 
-    app.delete("/students/:id", async (req, res) => {
-      const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
-      const result = await studentsCollection.deleteOne(query);
-      res.send(result);
-    });
+//     app.delete("/users/:id", async (req, res) => {
+//       const id = req.params.id;
+//       const query = { _id: new ObjectId(id) };
+//       const result = await usersCollection.deleteOne(query);
+//       res.send(result);
+//     });
 
 
     await client.db("admin").command({ ping: 1 });
