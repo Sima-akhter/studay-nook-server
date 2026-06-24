@@ -35,16 +35,19 @@ const catchAsync = (fn) => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };
 
-const run = async () => {
-  try {
-    await client.connect();
-    console.log("Connected to MongoDB!");
+const db = client.db("study-nook");
+const roomsCollection = db.collection("rooms");
+const bookingsCollection = db.collection("bookings");
+const usersCollection = db.collection("user");
+const sessionsCollection = db.collection("session");
 
-    const db = client.db("study-nook");
-    const roomsCollection = db.collection("rooms");
-    const bookingsCollection = db.collection("bookings");
-    const usersCollection = db.collection("user"); // better-auth default is "user"
-    const sessionsCollection = db.collection("session"); // better-auth default is "session"
+client.connect()
+  .then(() => {
+    console.log("Connected to MongoDB!");
+  })
+  .catch((error) => {
+    console.error("MongoDB connection failed:", error);
+  });
 
     // ----------------------------------------
     // MIDDLEWARE
@@ -759,15 +762,14 @@ const run = async () => {
       });
     });
 
-    app.get("/", (req, res) => {
-      res.send("Study Nook Server is running");
-    });
-  } catch (error) {
-    console.error("MongoDB connection failed:", error);
-  }
-};
-run().catch(console.dir);
-
-app.listen(port, () => {
-  console.log(`Study Nook Server is running on port ${port}`);
+app.get("/", (req, res) => {
+  res.send("Study Nook Server is running");
 });
+
+if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
+  app.listen(port, () => {
+    console.log(`Study Nook Server is running on port ${port}`);
+  });
+}
+
+module.exports = app;
