@@ -73,6 +73,10 @@ const authenticate = catchAsync(async (req, res, next) => {
   let token =
     req.cookies["better-auth.session_token"] ||
     req.cookies["__secure-better-auth.session_token"];
+  
+  console.log("Cookies:", req.cookies);
+  console.log("Headers Cookie:", req.headers.cookie);
+  
   if (!token && req.headers.authorization?.startsWith("Bearer ")) {
     token = req.headers.authorization.split(" ")[1];
   }
